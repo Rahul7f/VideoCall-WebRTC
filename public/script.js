@@ -8,7 +8,7 @@ const socket = io('/')
 
 const myPeer = new Peer(undefined, {
     secure: true,
-    host: 'peerjserver7f.herokuapp.com',
+    host: '/',
     port: '443'
 })
 // object for all connected users
