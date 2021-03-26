@@ -6,10 +6,12 @@ const socket = io('/')
  * connecting to the server from client peerJS
 */
 
+
+
 const myPeer = new Peer(undefined, {
-    secure: true,
     host: '/',
-    port: '443'
+    port: '3001',
+    path: '/'
 })
 // object for all connected users
 const peers = {}
@@ -72,6 +74,10 @@ socket.on('user-disconnected', userID => {
     }
 })
 
+socket.on('initName',data=>{
+    console.log(data);
+})
+
 // this function conenct new user to peer
 // it take userid  and user stream
 function connetToNewUser(userID, stream) {
@@ -110,3 +116,4 @@ function addVideoStream(video, stream) {
     // videoGreid is a div here we append video in this div
     videoGrid.append(video)
 }
+

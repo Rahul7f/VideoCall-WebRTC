@@ -11,6 +11,7 @@ if (port == null || port == "") {
   port = 3000;
 }
 
+
 // universal unique identifiyer  always delare like this
 const{v4: uuidV4} = require('uuid') 
 //set ejs
@@ -29,10 +30,12 @@ app.get('/random',(req,res)=>{
    * here uuidv4 generete unique string every time 
    */
   res.render('wait');
+
 })
 
 app.get('/il',(req,res)=>{
   users.push([req,res]);
+
   console.log("Hey it is running");
   myint = setInterval(()=>{
     if(users.length >= 2)
@@ -70,21 +73,24 @@ app.get('/:room',(req,res)=>{
 io.on('connection',socket=>{
  /**this handel request from client side 
   *  clint send roomid and user id which connect */
+    data = socket.id
+    socket.emit('initName', data);
+    
 
   socket.on('join-room',(roomID,userID)=>{
     socket.join(roomID)// create socket room
-    socket.to(roomID).emit('user-connected',userID);
-   }); // send msg to room in which user connect
-    
+    socket.to(roomID).emit('user-connected',userID); // send msg to room in which user connect
+
     // when user disconnect  send  userid to  "user-disconnect" on clint side
     socket.on('disconnect',()=>{
       socket.to(roomID).emit('user-disconnected',userID);
-    });
-  });
+    })
+  })
 
-
+})
 
 
 server.listen(port, () => {
   console.log(`Example app listening `)
 });
+
