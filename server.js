@@ -29,7 +29,6 @@ app.get('/random',(req,res)=>{
   /** here we redirect user to random room if available
    * else he will be sent to one of the available room
    */
-  
   if(rooms_available.length < 1)
   {
     var t = uuidV4();
@@ -40,33 +39,10 @@ app.get('/random',(req,res)=>{
   else 
   {
     var t = rooms_available[0];
-    // rooms_joinCount[t] += 1;
-    // if(rooms_joinCount[t] >= 2)
-    // {
-    //   rooms_available.shift();
-    // }
     res.redirect(`/${t}`);
   }
 })
 
-// app.get('/il',(req,res)=>{
-//   users.push([req,res]);
-//   console.log("Hey it is running");
-//   myint = setInterval(()=>{
-//     if(users.length >= 2)
-//     {
-//       a = users[0];
-//       b = users[1];
-//       users.shift();
-//       users.shift();
-//       var t = uuidV4();
-//       console.log("Room is : ", t);
-//       a[1].redirect(`/${t}`);
-//       b[1].redirect(`/${t}`);
-//       clearInterval(myint);
-//     }
-//   },1000);
-// });
 
 app.get('/',(req,res)=>{
   /** here we redirect user to a unique room
@@ -97,8 +73,10 @@ app.get('/:room',(req,res)=>{
          rooms_available.splice(ind,1);
        }
      }
-     console.log(rooms_available);
-     console.log(rooms_joinCount);
+     console.log("available room : ");
+     console.log( rooms_available);
+     console.log("room join count: ");
+     console.log( rooms_joinCount);
    }
   res.render('room',{roomID:req.params.room})
 })
