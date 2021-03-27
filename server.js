@@ -11,7 +11,6 @@ if (port == null || port == "") {
   port = 3000;
 }
 
-
 // universal unique identifiyer  always delare like this
 const{v4: uuidV4} = require('uuid') 
 //set ejs
@@ -20,38 +19,54 @@ app.set('view engine','ejs')
 app.use(express.static('public')) 
 
 
+var rooms_available = [];
+var rooms_joinCount = {};
+
+
 // path  /
 
-var users = [];
-
 app.get('/random',(req,res)=>{
-  /** here we redirect user to a unique room
-   * if users direct open link so they create a unique room to video call
-   * here uuidv4 generete unique string every time 
+  /** here we redirect user to random room if available
+   * else he will be sent to one of the available room
    */
-  res.render('wait');
-
+  
+  if(rooms_available.length < 1)
+  {
+    var t = uuidV4();
+    rooms_available.push(t);
+    rooms_joinCount[t] = 0;
+    res.redirect(`/${t}`);
+  }
+  else 
+  {
+    var t = rooms_available[0];
+    // rooms_joinCount[t] += 1;
+    // if(rooms_joinCount[t] >= 2)
+    // {
+    //   rooms_available.shift();
+    // }
+    res.redirect(`/${t}`);
+  }
 })
 
-app.get('/il',(req,res)=>{
-  users.push([req,res]);
-
-  console.log("Hey it is running");
-  myint = setInterval(()=>{
-    if(users.length >= 2)
-    {
-      a = users[0];
-      b = users[1];
-      users.shift();
-      users.shift();
-      var t = uuidV4();
-      console.log("Room is : ", t);
-      a[1].redirect(`/${t}`);
-      b[1].redirect(`/${t}`);
-      clearInterval(myint);
-    }
-  },1000);
-});
+// app.get('/il',(req,res)=>{
+//   users.push([req,res]);
+//   console.log("Hey it is running");
+//   myint = setInterval(()=>{
+//     if(users.length >= 2)
+//     {
+//       a = users[0];
+//       b = users[1];
+//       users.shift();
+//       users.shift();
+//       var t = uuidV4();
+//       console.log("Room is : ", t);
+//       a[1].redirect(`/${t}`);
+//       b[1].redirect(`/${t}`);
+//       clearInterval(myint);
+//     }
+//   },1000);
+// });
 
 app.get('/',(req,res)=>{
   /** here we redirect user to a unique room
@@ -61,10 +76,30 @@ app.get('/',(req,res)=>{
    res.redirect(`/${uuidV4()}`)
 })
 
+// browser automatically sends GET for favicon.ico . It handles the same
+app.get('/favicon.ico',(req,res)=>{
+  //do nothing
+});
+
 /**if user clcik on link they redirect to blow path */
 app.get('/:room',(req,res)=>{
   /**here we render our ejs file and send rendom 
    *  string  created by uuidv4 function  */
+    var t = req.params.room;
+   if(rooms_joinCount[t] >= 0)
+   {
+     rooms_joinCount[t] += 1;
+     if(rooms_joinCount[t] >= 2)
+     {
+       const ind = rooms_available.indexOf(t);
+       if(ind > -1)
+       {
+         rooms_available.splice(ind,1);
+       }
+     }
+     console.log(rooms_available);
+     console.log(rooms_joinCount);
+   }
   res.render('room',{roomID:req.params.room})
 })
 
@@ -77,18 +112,45 @@ io.on('connection',socket=>{
     socket.emit('initName', data);
     
 
+
+ // to handle disconnection from server
+ socket.on('connected-socket',(roomID)=>{
+  socket.join(roomID);
+  socket.on('disconnect',function () {
+      if(rooms_joinCount[roomID] >= 0)
+      {
+        rooms_joinCount[roomID] -= 1;
+        if (rooms_joinCount[roomID] <= 1 && rooms_available.indexOf(roomID) == -1) {
+          rooms_available.push(roomID);
+        }
+        console.log(rooms_available);
+        console.log(rooms_joinCount);
+      }
+    });
+ });
+
   socket.on('join-room',(roomID,userID)=>{
     socket.join(roomID)// create socket room
-    socket.to(roomID).emit('user-connected',userID); // send msg to room in which user connect
-
+    socket.to(roomID).emit('user-connected',userID);
+    // send msg to room in which user connect
+    
     // when user disconnect  send  userid to  "user-disconnect" on clint side
     socket.on('disconnect',()=>{
       socket.to(roomID).emit('user-disconnected',userID);
-    })
-  })
+    });
+  });
+});
 
-})
-
+setInterval(()=>{
+  if(rooms_available.length > 1)
+  {
+    console.log("Switch request Sent");
+    io.sockets.to(rooms_available[1]).emit('switch-room',rooms_available[0]);
+    rooms_available.splice(1,1);
+    console.log(rooms_available);
+    console.log(rooms_joinCount);
+  }
+},2000);
 
 server.listen(port, () => {
   console.log(`Example app listening `)
