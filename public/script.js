@@ -23,6 +23,20 @@ const myvideo = document.createElement('video')
 // we don't  want to hear our voice on video call  mute for self
 myvideo.muted = true
 
+socket.on('connect',()=>{
+    socket.emit('connected-socket',ROOM_ID);
+});
+
+socket.on('switch-room',(roomID)=>{
+    console.log("Switch request received");
+    ROOM_ID = roomID;
+    window.location.href = "/"+roomID;
+});
+
+const listener = (eventName, ...args) => {
+    console.log(eventName, args);
+  }
+socket.onAny(listener);
 
 // this code is generally for get user video and audio js code 
 // it return promice that resolve to media stream object
