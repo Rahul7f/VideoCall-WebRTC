@@ -49,7 +49,8 @@ app.get('/',(req,res)=>{
    * if users direct open link so they create a unique room to video call
    * here uuidv4 generete unique string every time 
    */
-   res.redirect(`/${uuidV4()}`)
+  //  res.redirect(`/${uuidV4()}`)
+  res.sendFile(__dirname+"/index.html")
 })
 
 // browser automatically sends GET for favicon.ico . It handles the same
