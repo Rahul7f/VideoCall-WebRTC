@@ -5,10 +5,6 @@ const socket = io('/')
 /**peerJS simplifies peer to peer data, video, and audio call by webrtc 
  * connecting to the server from client peerJS
 */
-
-
-
-
 const myPeer = new Peer(undefined, {
     host: '/',
     port: '3001',

@@ -5,6 +5,7 @@ const { unwatchFile } = require('fs');
 const app = express()
 const server = require('http').Server(app);
 const io = require("socket.io")(server)
+var bodyParser = require('body-parser')
 
 let port = process.env.PORT;
 if (port == null || port == "") {
@@ -17,6 +18,9 @@ const{v4: uuidV4} = require('uuid')
 app.set('view engine','ejs') 
 // set public folder to acess clint side code like js, css,html
 app.use(express.static('public')) 
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 
 var rooms_available = [];
@@ -51,6 +55,16 @@ app.get('/',(req,res)=>{
    */
   //  res.redirect(`/${uuidV4()}`)
   res.sendFile(__dirname+"/index.html")
+})
+
+// path to join existing meeting
+app.post('/',(req,res)=>{
+  res.redirect("/"+req.body.joinURL)
+})
+
+// path to create new meet
+app.post('/newmeet',(req,res)=>{
+  res.redirect(`/${uuidV4()}`)
 })
 
 // browser automatically sends GET for favicon.ico . It handles the same
