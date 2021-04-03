@@ -146,6 +146,6 @@ setInterval(()=>{
 },2000);
 
 server.listen(port, () => {
-  console.log(`Example app listening `)
+  console.log(`app listening `)
 });
 

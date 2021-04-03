@@ -5,11 +5,26 @@ const socket = io('/')
 /**peerJS simplifies peer to peer data, video, and audio call by webrtc 
  * connecting to the server from client peerJS
 */
+
+//// use blow code to  test on local host/////
+
+// const myPeer = new Peer(undefined, {
+//     host: '/',
+//     port: '3001',
+//     path: '/'
+// })
+
+//// use blow code to  deploye on heroku/////
+
 const myPeer = new Peer(undefined, {
-    host: '/',
-    port: '3001',
-    path: '/'
+    secure: true,
+    host: 'peerjserver7f.herokuapp.com',
+    port: '443'
 })
+
+//// -----------------------------------////
+
+
 // object for all connected users
 const peers = {}
 
