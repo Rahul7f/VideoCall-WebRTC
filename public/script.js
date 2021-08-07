@@ -7,20 +7,21 @@ const socket = io('/')
 */
 
 //// use blow code to  test on local host/////
+// command to start peer server on local host: peerjs --port 3001
 
-// const myPeer = new Peer(undefined, {
-//     host: '/',
-//     port: '3001',
-//     path: '/'
-// })
+const myPeer = new Peer(undefined, {
+    host: '/',
+    port: '3001',
+    path: '/'
+})
 
 //// use blow code to  deploye on heroku/////
 
-const myPeer = new Peer(undefined, {
-    secure: true,
-    host: 'peerjserver7f.herokuapp.com',
-    port: '443'
-})
+// const myPeer = new Peer(undefined, {
+//     secure: true,
+//     host: 'peerjserver7f.herokuapp.com',
+//     port: '443'
+// })
 
 //// -----------------------------------////
 
